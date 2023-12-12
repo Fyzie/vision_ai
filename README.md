@@ -10,14 +10,14 @@ Open Images Dataset V7:  [[Visualizer](https://storage.googleapis.com/openimages
 1. Download [downloader.py](https://raw.githubusercontent.com/openimages/dataset/master/downloader.py) file.
 2. Download the object detection dataset: [Train](https://storage.googleapis.com/openimages/v6/oidv6-train-annotations-bbox.csv), [Validation](https://storage.googleapis.com/openimages/v5/validation-annotations-bbox.csv) and [Test](https://storage.googleapis.com/openimages/v5/test-annotations-bbox.csv).
 3. Download metadata to identify label name for specific classes/ datasets. Eg. for bbox: [Boxable class names](https://storage.googleapis.com/openimages/v7/oidv7-class-descriptions-boxable.csv)
-4. Execute create_image_list_file.py (Modify desired class id, directory path, and number of desired images accordingly)
+4. Execute [create_image_list_file.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/create_image_list_file.py) (Modify desired class id, directory path, and number of desired images accordingly)
 5. Execute downloader.py at terminal prompt (make sure you are in the right directory path)
 ```
 python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 ```
 - $IMAGE_LIST_FILE : file name created from create_image_list_file.py (eg. image_list_file)
 - $DOWNLOAD_FOLDER : folder name to store the downloaded datasets (any desired name)
-6. Execute create_dataset_yolo_format.py
+6. Execute [create_dataset_yolo_format.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/create_dataset_yolo_format.py) (Modify your base directory, class id, and number of allocated images previously)
   
 > Notes: Not all images may have annotations !!! Final amount of formatted yolo datasets at step 6 may less than downloaded images at step 4 and 5.   
 
