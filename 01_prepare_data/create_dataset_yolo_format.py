@@ -3,7 +3,7 @@
 import os
 import shutil
 
-base_directory = 'D:\Pycharm Projects\YPPB Projects\yolov8'
+base_directory = '.'
 
 DATA_ALL_DIR = os.path.join(base_directory, '$DOWNLOAD_FOLDER')
 
