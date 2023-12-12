@@ -19,6 +19,7 @@ python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 - $DOWNLOAD_FOLDER : folder name to store the downloaded datasets (any desired name)
 6. Execute create_dataset_yolo_format.py, changing DATA_ALL_DIR by $DOWNLOAD_FOLDER
 
+> Download annotations and metadata files according to your type of computer vision applications
 > Recommended to keep all scripts in one folder !!!   
 > Reference: [computervisioneng](https://github.com/computervisioneng/train-yolov8-custom-dataset-step-by-step-guide)
 
