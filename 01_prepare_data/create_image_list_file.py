@@ -12,7 +12,7 @@ test_bboxes_filename = os.path.join('.', 'test-annotations-bbox.csv')
 image_list_file_path = os.path.join('.', 'image_list_file')
 
 ########## LIMITER: limit number of desired image ids for each dataset [train, validation, test] ###########
-limit = [20, 15, 6] 
+limit = [300, 90, 30] 
 
 image_list_file_list = []
 for j, filename in enumerate([train_bboxes_filename, validation_bboxes_filename, test_bboxes_filename]):
