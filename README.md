@@ -37,7 +37,7 @@ val: images/validation  # val images (relative to 'path')
 names:
   0: door
 ```
-2. Execute scratch_object_detection.py
+2. Execute [scratch_object_detection.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/02_object_detection/scratch_object_detection.py)
 3. Once training is completed, get your results
 
 ![Screenshot 2023-12-12 210547](https://github.com/Fyzie/Visual-AI-with-YoloV8/assets/76240694/e273b713-cf2d-406b-a27d-cca5126914f4)
