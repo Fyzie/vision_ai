@@ -8,7 +8,7 @@ train_bboxes_filename = os.path.join('.', 'oidv6-train-annotations-bbox.csv')
 validation_bboxes_filename = os.path.join('.', 'validation-annotations-bbox.csv')
 test_bboxes_filename = os.path.join('.', 'test-annotations-bbox.csv')
 
-image_list_file_path = os.path.join('.', 'image_list_file') # saved file with all desired image ids
+image_list_file_path = os.path.join('.', 'image_list_file') # all image ids will be saved here
 
 # limit = 100 # to limit number of desired images
 image_list_file_list = []
