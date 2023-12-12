@@ -29,9 +29,9 @@ python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 ### Training Using Custom Datasets (Open Images)
 1. Create {any_name}.yaml file
 ```
-path: {.../data} # dataset root dir
-train: {images/train}  # train images (relative to 'path')
-val: {images/validation}  # val images (relative to 'path')
+path: .../data # dataset root dir
+train: images/train  # train images (relative to 'path')
+val: images/validation  # val images (relative to 'path')
 
 # Classes
 names:
