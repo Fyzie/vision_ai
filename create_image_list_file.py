@@ -10,12 +10,8 @@ test_bboxes_filename = os.path.join('.', 'test-annotations-bbox.csv')
 
 image_list_file_path = os.path.join('.', 'image_list_file') # all image ids will be saved here
 
-# limit = 100 # to limit number of desired images
 image_list_file_list = []
 for j, filename in enumerate([train_bboxes_filename, validation_bboxes_filename, test_bboxes_filename]):
-    ## to limit number of desired images
-    # if j == limit:
-    #     break
     print(filename)
     with open(filename, 'r') as f:
         line = f.readline()
