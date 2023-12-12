@@ -17,7 +17,7 @@ python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 ```
 - $IMAGE_LIST_FILE : file name created from create_image_list_file.py (eg. image_list_file)
 - $DOWNLOAD_FOLDER : folder name to store the downloaded datasets (any desired name)
-6. Execute create_dataset_yolo_format.py, changing DATA_ALL_DIR by $DOWNLOAD_FOLDER
+6. Execute create_dataset_yolo_format.py
   
 > Notes: Not all images may have annotations !!! Final amount of formatted yolo datasets at step 6 may less than downloaded images at step 4 and 5.   
 
