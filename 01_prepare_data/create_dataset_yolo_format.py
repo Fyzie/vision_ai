@@ -10,9 +10,8 @@ DATA_ALL_DIR = os.path.join(base_directory, '$DOWNLOAD_FOLDER')
 DATA_OUT_DIR = os.path.join(base_directory, 'data')
 
 for set_ in ['train', 'validation', 'test']:
-    for dir_ in [os.path.join(DATA_OUT_DIR, set_),
-                 os.path.join(DATA_OUT_DIR, set_, 'images'),
-                 os.path.join(DATA_OUT_DIR, set_, 'labels')]:
+    for dir_ in [os.path.join(DATA_OUT_DIR, 'images', set_),
+                 os.path.join(DATA_OUT_DIR, 'labels', set_)]:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
         os.makedirs(dir_)
@@ -38,10 +37,10 @@ for j, filename in enumerate([train_bboxes_filename, validation_bboxes_filename,
         while len(line) != 0:
             id, _, class_name, _, x1, x2, y1, y2, _, _, _, _, _ = line.split(',')[:13]
             if class_name in [door_id]:
-                if not os.path.exists(os.path.join(DATA_OUT_DIR, set_, 'images', '{}.jpg'.format(id))):
+                if not os.path.exists(os.path.join(DATA_OUT_DIR, 'images', set_, '{}.jpg'.format(id))):
                     shutil.copy(os.path.join(DATA_ALL_DIR, '{}.jpg'.format(id)),
-                                os.path.join(DATA_OUT_DIR, set_, 'images', '{}.jpg'.format(id)))
-                with open(os.path.join(DATA_OUT_DIR, set_, 'labels', '{}.txt'.format(id)), 'a') as f_ann:
+                                os.path.join(DATA_OUT_DIR, 'images', set_, '{}.jpg'.format(id)))
+                with open(os.path.join(DATA_OUT_DIR, 'labels', set_, '{}.txt'.format(id)), 'a') as f_ann:
                     # class_id, xc, yx, w, h
                     x1, x2, y1, y2 = [float(j) for j in [x1, x2, y1, y2]]
                     xc = (x1 + x2) / 2
