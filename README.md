@@ -26,3 +26,21 @@ python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 > Reference: [computervisioneng](https://github.com/computervisioneng/train-yolov8-custom-dataset-step-by-step-guide)
 
 ## Object Detection
+### Training Using Custom Datasets (Open Images)
+1. Create {any_name}.yaml file
+```
+path: {.../data} # dataset root dir
+train: {images/train}  # train images (relative to 'path')
+val: {images/validation}  # val images (relative to 'path')
+
+# Classes
+names:
+  0: door
+```
+2. Execute scratch_object_detection.py
+3. Once training is completed, get your results
+
+![Screenshot 2023-12-12 210547](https://github.com/Fyzie/Visual-AI-with-YoloV8/assets/76240694/e273b713-cf2d-406b-a27d-cca5126914f4)
+
+
+
