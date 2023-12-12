@@ -11,7 +11,7 @@ Open Images Dataset V7:  [[Visualizer](https://storage.googleapis.com/openimages
 2. Download the object detection dataset: [Train](https://storage.googleapis.com/openimages/v6/oidv6-train-annotations-bbox.csv), [Validation](https://storage.googleapis.com/openimages/v5/validation-annotations-bbox.csv) and [Test](https://storage.googleapis.com/openimages/v5/test-annotations-bbox.csv).
 3. Download metadata to identify label name for specific classes/ datasets. Eg. for bbox: [Boxable class names](https://storage.googleapis.com/openimages/v7/oidv7-class-descriptions-boxable.csv)
 4. Execute create_image_list_file.py (Modify desired class id accordingly)
-5. Execute downloader.py at terminal prompt
+5. Execute downloader.py at terminal prompt (make sure you are in the right directory path)
 ```
 python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 ```
