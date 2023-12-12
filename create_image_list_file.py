@@ -5,11 +5,11 @@ import os
 
 door_id = '/m/02dgv'
 
-train_bboxes_filename = os.path.join('YPPB Projects\yolov8', 'oidv6-train-annotations-bbox.csv')
-validation_bboxes_filename = os.path.join('YPPB Projects\yolov8', 'validation-annotations-bbox.csv')
-test_bboxes_filename = os.path.join('YPPB Projects\yolov8', 'test-annotations-bbox.csv')
+train_bboxes_filename = os.path.join('.', 'oidv6-train-annotations-bbox.csv')
+validation_bboxes_filename = os.path.join('.', 'validation-annotations-bbox.csv')
+test_bboxes_filename = os.path.join('.', 'test-annotations-bbox.csv')
 
-image_list_file_path = os.path.join('YPPB Projects\yolov8', 'test')
+image_list_file_path = os.path.join('.', 'image_list_file')
 
 ########## LIMITER: limit number of desired image ids for each dataset [train, validation, test] ###########
 limit = [20, 15, 6] 
