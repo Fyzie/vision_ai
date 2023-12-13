@@ -22,7 +22,6 @@ python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
 6. Execute [create_dataset_yolo_format.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/create_dataset_yolo_format.py) (Modify your base directory, class id, and number of allocated images previously)
 > YOLO label format: class x_center y_center width height   
 
-> Notes: Not all images may have annotations !!! Final amount of formatted yolo datasets at step 6 may less than downloaded images at step 4 and 5. 
 > Reference: [computervisioneng](https://github.com/computervisioneng/train-yolov8-custom-dataset-step-by-step-guide)
 
 To visualize bbox labels, you may use [visualize_bbox.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/visualize_bbox.py)
