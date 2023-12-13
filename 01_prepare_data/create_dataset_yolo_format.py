@@ -33,7 +33,6 @@ for j, filename in enumerate([train_bboxes_filename, validation_bboxes_filename,
 
         ############################### if limiter was used before ######################
         num_id = 0 
-        num = 0
 
         while len(line) != 0:
             id, _, class_name, _, x1, x2, y1, y2, _, _, _, _, _ = line.split(',')[:13]
@@ -57,6 +56,5 @@ for j, filename in enumerate([train_bboxes_filename, validation_bboxes_filename,
                 if num_id == limit[j]:
                     break
                 #################################################################################
-            num += 1
 
             line = f.readline()
