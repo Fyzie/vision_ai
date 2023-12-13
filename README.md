@@ -3,7 +3,6 @@
 Open Images Dataset V7:  [[Visualizer](https://storage.googleapis.com/openimages/web/visualizer/index.html)] [[Download](https://storage.googleapis.com/openimages/web/download_v7.html)]
 
 ### Steps to manually download specific datasets:
-![image](https://github.com/Fyzie/Visual-AI-with-YoloV8/assets/76240694/2878b7a9-fdd6-4e95-b313-5e852655d2a9)   
 
 ![Screenshot 2023-12-12 175820](https://github.com/Fyzie/Visual-AI-with-YoloV8/assets/76240694/938aa6f9-0c42-4d2f-ba3e-784174ea44c1)
 
