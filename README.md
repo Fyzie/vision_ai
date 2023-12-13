@@ -11,7 +11,7 @@ Open Images Dataset V7:  [[Visualizer](https://storage.googleapis.com/openimages
 3. Download metadata to identify label name for specific classes/ datasets. Eg. for bbox: [Boxable class names](https://storage.googleapis.com/openimages/v7/oidv7-class-descriptions-boxable.csv)
 > Download annotations and metadata files according to your type of computer vision applications   
 4. Execute [create_image_list_file.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/create_image_list_file.py) (Modify desired class id, directory path, and number of desired images accordingly)
-> You may check the number of data exists within each dataset for the ids through [check_ids_amount.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/check_ids_amount.py)
+> You may check the number of data exists within each dataset for the ids through [check_image_amount.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/check_image_amount.py)
 5. Execute downloader.py at terminal prompt (make sure you are in the right directory path)
 ```
 python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
