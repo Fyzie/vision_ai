@@ -13,7 +13,7 @@ Open Images Dataset V7:  [[Visualizer](https://storage.googleapis.com/openimages
 4. Execute [create_image_list_file.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/create_image_list_file.py)
 > - May first check the number of data exists within each dataset for the ids using [check_image_amount.py](https://github.com/Fyzie/Visual-AI-with-YoloV8/blob/main/01_prepare_data/check_image_amount.py)   
 > - Modify desired class id, directory path, and number of desired images accordingly   
-> - A limiter is included BUT the more the data, the better the developed model !!!   
+> - A limiter is there for quick project BUT the more the data, the better the developed model !!!   
 5. Execute downloader.py at terminal prompt (make sure you are in the right directory path)
 ```
 python downloader.py $IMAGE_LIST_FILE --download_folder=$DOWNLOAD_FOLDER
