@@ -24,7 +24,7 @@ def detect(image, model_path):
     cv2.waitKey()
 
 
-path = r'D:\Pycharm Projects\YPPB Projects\yolov8\data\images\test\0938634ea64e52a9.jpg'
+path = r'...\data\images\test\0938634ea64e52a9.jpg'
 image = cv2.imread(path)
 # cv2.imshow('Original Image', image)
 # cv2.waitKey()
