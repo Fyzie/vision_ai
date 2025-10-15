@@ -502,9 +502,9 @@ def main(
 
 if __name__ == '__main__':
     main(
-    project_name        = "Lens",
-    dataset_location    = r"D:\Pytorch Projects\computer_vision\training\data\lens-5-augment.1",
-    result_path         = r'D:\Pytorch Projects\computer_vision\training', # with "/results" folder ready
+    project_name        = "Project",
+    dataset_location    = r"",
+    result_path         = r'', # with "/results" folder ready
     resume              = False,
     model_path          = None,                                 # if want to resume model training
     num_workers         = 0,                                    # 'default':  max workers
