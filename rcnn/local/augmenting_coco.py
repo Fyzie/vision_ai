@@ -344,8 +344,8 @@ def main(
 
 def roboflow_dataset():
     from roboflow import Roboflow
-    rf = Roboflow(api_key="Mnx4uGjLhe58M3vt56Xi")
-    project = rf.workspace("irnow-1").project("lens-znaic")
+    rf = Roboflow(api_key="")
+    project = rf.workspace("").project("")
     version = project.version(7)
     dataset = version.download("coco-segmentation")
                     
@@ -354,9 +354,9 @@ def roboflow_dataset():
 if __name__ == '__main__':
     main(
         data_type       = 'roboflow',                                                              
-        # local_data      = r'D:\Pytorch Projects\computer_vision\training\data\segmented_lead_frame-7',                                                             
+        # local_data      = r'',                                                             
         roboflow_data   = roboflow_dataset().location,                                             
-        result_path     = r'C:\Users\Hafizi\Documents\computer vision\03-lens\data',            
+        result_path     = r'',            
         data_dist       = {'train': 3, 'valid': 1, 'test': 1},                                 
         train_transform = get_train_transforms(), 
         valid_transform = get_valid_transforms(),
