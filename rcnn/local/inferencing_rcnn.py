@@ -66,9 +66,9 @@ def main(
 
 if __name__ == '__main__':
     main(
-        image_path      = r'C:\Users\Hafizi\Documents\computer vision\07-lead_frame\code\Camera 40505689\live_pred\image_1756464858.png',
-        metadata_path   = r'C:\Users\Hafizi\Documents\computer vision\07-lead_frame\code\models2\run3\metadata.json',
-        model_path      = r'C:\Users\Hafizi\Documents\computer vision\07-lead_frame\code\models2\run3\best_model.pth',
+        image_path      = r'',
+        metadata_path   = r'',
+        model_path      = r'',
         conf_thresh     = 0.5,
         is_saved        = True
     )
