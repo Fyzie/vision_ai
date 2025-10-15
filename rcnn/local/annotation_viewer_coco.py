@@ -187,6 +187,6 @@ def main(
 
 if __name__ == '__main__':
     main(
-        image_dir           = r"C:\Users\Hafizi\Documents\computer vision\03-lens\data\lens8\train",
+        image_dir           = r"",
         annotation_filename = "_annotations.coco.json"
     )
