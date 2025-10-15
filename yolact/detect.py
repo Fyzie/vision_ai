@@ -189,7 +189,7 @@ def main(
 
 if __name__ == "__main__":
     main(
-        trained_model = r'D:\Pytorch Projects\computer_vision\training\results\Gasket\run4\weights\best_14.52_res101_custom_8244.pth',
+        trained_model = r'',
         img_size = 640,
         traditional_nms = False,
         hide_mask = False,
@@ -198,7 +198,7 @@ if __name__ == "__main__":
         cutout = False,
         show_lincomb = False,
         no_crop = False,
-        image_folder = r'D:\Pytorch Projects\computer_vision\training\vision_ai\yolact\data\gasket',  # set to your folder of images
+        image_folder = r'',  # set to your folder of images
         video_path = None,        # set to your video filename or None
         real_time = False,
         visual_thre = 0.3,

@@ -434,10 +434,10 @@ def main(
 
 if __name__ == "__main__":
     main(
-        project_name    = "LeadFrame",
-        dataset_path    = r"D:\Pytorch Projects\computer_vision\training\data\lead_frame-8-augment.1",
-        result_path     = r'D:\Pytorch Projects\computer_vision\training',
-        pretrained_path = r'D:\Pytorch Projects\computer_vision\training\weights',
+        project_name    = "Project",
+        dataset_path    = r"",
+        result_path     = r'',
+        pretrained_path = r'',
         config          = "res101_custom_config",
         num_epochs      = 1,
         batch_size      = 8,
