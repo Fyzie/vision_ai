@@ -15,15 +15,18 @@ def mask_annotator(image, masks, colors=[(255, 0, 0)], alpha=0.3):
     Returns:
         np.ndarray: Annotated image with masks overlaid.
     """
-
     overlay = image.copy()
+
+    if len(overlay.shape) == 2 or overlay.shape[2] == 1:
+        overlay = cv2.cvtColor(overlay, cv2.COLOR_GRAY2BGR)
 
     for i, mask in enumerate(masks):
         if hasattr(mask, 'cpu'):
             mask_np = mask.cpu().numpy().astype("uint8")
         else:
             mask_np = mask.astype("uint8")
-        color   = np.array(colors[i % len(colors)], dtype=np.uint8)
+
+        color = np.array(colors[i % len(colors)], dtype=np.uint8)
 
         for c in range(3):
             overlay[:, :, c] = np.where(
