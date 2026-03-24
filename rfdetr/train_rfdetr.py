@@ -1,202 +1,127 @@
-# train_rfdetr_local.py
 import os
-import shutil
-import numpy as np
-import random
-import gc
-import weakref
-from PIL import Image
-import matplotlib.pyplot as plt
-import torch
 import json
+import rfdetr
+from collections import Counter
+from helpers.gpu_monitor import *
+from helpers.data import *
+from helpers.infer import run_inference
+from helpers.metadata import TrainingMetadata
+from helpers.settings import ModelConfig, TrainingConfig
+from rfdetr.util.misc import MetricLogger
 
-from rfdetr import RFDETRSegPreview
-from rfdetr.config import RFDETRSegPreviewConfig
+def clean_str(self):
+    whitelist = ['loss', 'class_error', 'loss_ce', 'loss_bbox', 'loss_giou', 'loss_mask_dice']
+    loss_str = [f"{name}: {meter}" for name, meter in self.meters.items() if name in whitelist]
+    return self.delimiter.join(loss_str)
 
-import supervision as sv
+MetricLogger.__str__ = clean_str
 
-def check_gpu_vram(required_gb=8):
-    if not torch.cuda.is_available():
-        print("[WARNING] CUDA not available. Training will run on CPU.")
-        return False
+def get_next_run_number(output_path: str, width: int = 3) -> str:
+    if not os.path.exists(output_path): return "1".zfill(width)
+    run_nums = [int(n) for n in os.listdir(output_path) if os.path.isdir(os.path.join(output_path, n)) and n.isdigit()]
+    return str(max(run_nums) + 1 if run_nums else 1).zfill(width)
 
-    device = torch.cuda.current_device()
-    props = torch.cuda.get_device_properties(device)
-    total = props.total_memory / 1024**3
-    reserved = torch.cuda.memory_reserved(device) / 1024**3
-    allocated = torch.cuda.memory_allocated(device) / 1024**3
-    free = total - (reserved + allocated)
+def analyze_dataset_density(annotation_path, num_queries_threshold=100):
+    if not os.path.exists(annotation_path): return
+    with open(annotation_path, 'r') as f:
+        data = json.load(f)
+    counts = list(Counter([ann['image_id'] for ann in data['annotations']]).values())
+    if not counts: return
 
-    print(f"[GPU] Model: {props.name}")
-    print(f"[GPU] Total VRAM : {total:.2f} GB")
-    print(f"[GPU] Free VRAM  : {free:.2f} GB")
+    avg_objs, max_objs = sum(counts) / len(data['images']), max(counts)
+    over_limit = sum(1 for c in counts if c > num_queries_threshold)
 
-    if free < required_gb:
-        print(f"[WARNING] Expected at least {required_gb} GB free. You may OOM.")
-        return False
+    print(f"\n{'='*40}\nDATASET DENSITY: Avg {avg_objs:.2f} | Max {max_objs} | Over Limit: {over_limit}\n{'='*40}")
+    if over_limit > 0:
+        print(f"WARNING: Consider increasing num_queries to at least {max_objs}.")
 
-    print("[GPU] VRAM check passed.")
-    return True
+def get_model_and_config(model_type: str):
+    """
+    to retrieves the Model class and Config class based on string name.
+    e.g.: RFDETRSegSmall -> RFDETRSegSmall, RFDETRSegSmallConfig
+    """
+    try:
+        model_class = getattr(rfdetr, model_type)
+        from rfdetr import config as rf_configs
+        config_class = getattr(rf_configs, f"{model_type}Config")
+        return model_class, config_class
+    except AttributeError:
+        raise ImportError(f"Model type '{model_type}' or its config is not supported or was not found in rfdetr.")
 
-def cleanup_gpu_memory(obj=None, verbose=False):
-    if not torch.cuda.is_available():
-        return
+def execute_training_pipeline(dataset_dir, output_dir, experiment_name, model_type, pretrain_weights=None):
+    dataset = load_dataset_info(dataset_dir)
+    model_cfg, train_cfg = ModelConfig(), TrainingConfig()
+    
+    analyze_dataset_density(dataset["annotation_path"], num_queries_threshold=model_cfg.num_queries)
 
-    def stats():
-        return (
-            torch.cuda.memory_allocated() / 1024**2,
-            torch.cuda.memory_reserved() / 1024**2,
-        )
+    ModelClass, ConfigClass = get_model_and_config(model_type)
 
-    torch.cuda.synchronize()
+    metadata = TrainingMetadata(dataset_dir=dataset_dir, output_dir=output_dir, experiment_name=experiment_name)
+    metadata.set_dataset_info(num_classes=dataset["num_classes"], class_names=dataset["class_names"], 
+                              colors=dataset["colors"], annotation_path=dataset["annotation_path"])
+    metadata.set_model_config(model_type=model_type, **model_cfg.__dict__)
+    metadata.set_training_params(**train_cfg.__dict__)
+    metadata.save()
 
-    if verbose:
-        a, r = stats()
-        print(f"[Cleanup Before] Alloc: {a:.2f} MB | Reserved: {r:.2f} MB")
-
-    if obj is not None:
-        ref = weakref.ref(obj)
-        del obj
-        if ref() is not None and verbose:
-            print("[WARNING] Object not fully deleted.")
-
-    gc.collect()
-    torch.cuda.empty_cache()
-    torch.cuda.ipc_collect()
-    torch.cuda.synchronize()
-
-    if verbose:
-        a, r = stats()
-        print(f"[Cleanup After]  Alloc: {a:.2f} MB | Reserved: {r:.2f} MB")
-
-def annotate_img(image, detections, classes=None):
-    box_annotator = sv.BoxAnnotator()
-    label_annotator = sv.LabelAnnotator()
-
-    if classes is not None:
-        labels = [f"{classes[d]}: {c:.2f}" for c, d in zip(detections.confidence, detections.class_id)]
-    else:
-        labels = None
-
-    overlay = box_annotator.annotate(
-        scene=image,
-        detections=detections
-    )
-    overlay = label_annotator.annotate(
-        scene=overlay,
-        detections=detections,
-        labels = labels
-    )
-
-    return overlay
-
-def check_test_dir(dataset_dir, source_folder_name="valid"):
-    test_dir = os.path.join(dataset_dir, "test")
-    source_dir = os.path.join(dataset_dir, source_folder_name)
-
-    if not os.path.exists(test_dir):
-        shutil.copytree(source_dir, test_dir)
-
-#main
-def main():
-
-    dataset_dir = "/path/to/dataset"
-    dataset_folder = os.path.basename(dataset_dir)
-    output_dir = f"/path/to/output/folder"
-
-    check_test_dir(dataset_dir)
-
-    annotation_path = os.path.join(dataset_dir, 'train', '_annotations.coco.json')
-    with open(annotation_path, 'r') as file:
-        data = json.load(file)
-
-    num_classes = len(data['categories'])
-    print(f"Number of classes: {num_classes}")
-        
     check_gpu_vram(required_gb=8)
 
-    # configurations
-    config = RFDETRSegPreviewConfig(
-        encoder="dinov2_windowed_small",
-        num_classes=num_classes,
-        resolution=1024, # default:560
-        num_queries=200, # default
-        num_select=200, # default
-        patch_size=12, # default
-        dec_layers=4, # default
-        num_windows=2, # default
-        segmentation_head=True, # default
-    )
+    config = ConfigClass(**model_cfg.__dict__, num_classes=dataset["num_classes"])
+    model = ModelClass(config=config, pretrain_weights=pretrain_weights)
 
-    model = RFDETRSegPreview(config=config)
-
-    model.train(
-        dataset_dir=dataset_dir,
-        epochs=50,
-        batch_size=2,
-        grad_accum_steps=4,
-        lr=1e-4,
-        lr_encoder=1e-4,
-        early_stopping = True,
-        early_stopping_patience = 10,
-        early_stop = True,
-        patience = 5,
-        num_workers=0,
-        multi_scale=True,
-        expanded_scales=False,
-        use_ema=True,
-        output_dir=output_dir,
-    )
-
+    model.train(dataset_dir=dataset_dir, output_dir=output_dir, **train_cfg.__dict__)
     cleanup_gpu_memory(model, verbose=True)
 
-    checkpoint_path = os.path.join(output_dir, "checkpoint_best_total.pth")
-    model = RFDETRSegPreview(pretrain_weights=checkpoint_path)
-    model.optimize_for_inference()
+    best_weights = os.path.join(output_dir, "checkpoint_best_total.pth")
+    if os.path.exists(best_weights):
+        infer_model = ModelClass(pretrain_weights=best_weights)
+        test_dir = os.path.join(dataset_dir, "test")
+        if os.path.exists(test_dir):
+            images = [os.path.join(test_dir, f) for f in os.listdir(test_dir) if f.lower().endswith((".jpg", ".png"))]
+            run_inference(infer_model, images, output_dir, dataset["class_names"], dataset["colors"])
+    
+    return best_weights
 
-    ds_test = sv.DetectionDataset.from_coco(
-        images_directory_path=os.path.join(dataset_dir, "test"),
-        annotations_path=os.path.join(dataset_dir, "test", "_annotations.coco.json"),
-        force_masks=True
-    )
+def run_experiment(
+    experiment_name: str, 
+    dataset_dir: str, 
+    model_type: str,
+    output_parent_dir: str = "", 
+    mode: str = "standard",
+    **kwargs
+):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    check_test_dir(dataset_dir)
 
-# show annotated images
-    N = 16
-    L = len(ds_test)
-    annotated_images = []
-
-    for i in random.sample(range(L), N):
-        path, _, annotations = ds_test[i]
-        image = Image.open(path).convert("RGB")
-        detections = model.predict(image, threshold=0.5)
-
-        if detections:
-            boxes, masks, scores, class_ids = detections.xyxy, detections.mask, detections.confidence, detections.class_id
-
-            print(f"Boxes: {boxes}")
-            print(f"Masks: {masks}")
-            print(f"Scores: {scores}")
-            print(f"Class IDs: {class_ids}")
-
-        annotated = annotate_img(
-            image=image,
-            detections=detections,
-            classes={idx: c for idx, c in enumerate(ds_test.classes)}
+    inference_batch = 1
+    if mode == "sahi":
+        target_slices = kwargs.get('target_slices', (2, 2))
+        overlap_px = kwargs.get('overlap_px', (120, 0))
+        dataset_dir = slice_dataset(
+            dataset_dir, 
+            target_slices=target_slices, 
+            overlap_px=overlap_px, 
+            output_name="_sliced_overlap"
         )
-        annotated_images.append(annotated)
+        inference_batch = target_slices[0] * target_slices[1]
 
-    fig, axes = plt.subplots(4, 4, figsize=(12, 12))
-    for ax, img in zip(axes.flat, annotated_images):
-        ax.imshow(img)
-        ax.axis("off")
-    plt.tight_layout()
+    dataset_folder = os.path.basename(dataset_dir)
+    base_results_path = os.path.join(output_parent_dir or script_dir, "results", dataset_folder)
+    run_num = get_next_run_number(base_results_path)
+    session_dir = os.path.join(base_results_path, run_num)
+    os.makedirs(session_dir, exist_ok=True)
 
-    output_path = os.path.join(output_dir, "annotated_grid.png")
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    plt.savefig(output_path, dpi=200)
-    print(f"(NOTE) Annotated grid saved to: {output_path}")
+    execute_training_pipeline(dataset_dir, session_dir, experiment_name, model_type)
 
-    plt.show()
 
 if __name__ == "__main__":
-    main()
+    CONFIG = {
+        "mode": "standard", # Options: "standard" or "sahi"
+        "model_type": "RFDETRSegSmall", # Options: RFDETRSegNano, RFDETRSegSmall, RFDETRSegMedium, etc.
+        "experiment_name": "rfdetr-station3-point-based",
+        "dataset_dir": "D:/Pytorch Projects/work/lens/data/lens_station3-16.combined_polar_unpolar2",
+        "output_parent_dir": "D:/Pytorch Projects/work/lens",
+        "target_slices": (2, 2),
+        "overlap_px": (120, 0),
+    }
+
+    run_experiment(**CONFIG)
