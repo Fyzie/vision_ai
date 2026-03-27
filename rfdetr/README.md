@@ -1,1 +1,1 @@
-# RFDETR 1.3
+# RFDETR 1.3.0
