@@ -9,7 +9,7 @@ model.optimize_for_inference()
 ### MODEL PREDICTIONS ############################################################################
 img_result = image.copy()
 predictions = model.predict(image, conf_threshold=CONFIDENCE_THRESHOLD)
-for box, score, mask, class_id in zip(predictions['boxes'], predictions['scores'], predictions['mask'], predictions['class_ids']):
+for box, score, mask, class_id in zip(predictions['xyxy'], predictions['confidence'], predictions['mask'], predictions['class_id']):
     print(mask)
     x1, y1, x2, y2 = map(int, box)
 
