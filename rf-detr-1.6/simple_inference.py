@@ -25,4 +25,4 @@ for box, score, mask, class_id in zip(predictions.xyxy, predictions.confidence, 
 
 ######################################################################################################
 
-cv2.imshow("Live Video", image)
+cv2.imshow("Live Video", img_result)
